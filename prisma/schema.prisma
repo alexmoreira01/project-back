@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  name       String
+  password   String
+  userType   UserType @default(USER)
+  teamId     Int?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  team          Team?      @relation("TeamMembers", fields: [teamId], references: [id])
+  adminOfTeam   Team?      @relation("TeamAdmin")
+  createdNotes  Note[]     @relation("CreatedBy")
+  assignedNotes Note[]     @relation("AssignedTo")
+  apiTokens     ApiToken[]
+
+  @@index([email])
+  @@index([teamId])
+}
+
+model Team {
+  id          Int      @id @default(autoincrement())
+  name        String
+  code        String   @unique
+  description String?
+  adminId     Int      @unique
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  admin   User   @relation("TeamAdmin", fields: [adminId], references: [id])
+  members User[] @relation("TeamMembers")
+  notes   Note[]
+
+  @@index([code])
+  @@index([adminId])
+}
+
+enum UserType {
+  ADMIN
+  USER
+}
+
+enum NoteStatus {
+  PENDING
+  TODO
+  IN_PROGRESS
+  REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum Category {
+  note
+  task
+}
+
+model Note {
+  id           Int        @id @default(autoincrement())
+  title        String
+  description  String?
+  status       NoteStatus @default(PENDING)
+  priority     Priority   @default(MEDIUM)
+  category     Category?
+  assignedToId Int?
+  createdById  Int
+  teamId       Int?
+  dueDate      DateTime?
+  created_at   DateTime   @default(now())
+  updated_at   DateTime   @updatedAt
+
+  createdBy  User  @relation("CreatedBy", fields: [createdById], references: [id])
+  assignedTo User? @relation("AssignedTo", fields: [assignedToId], references: [id])
+  team       Team? @relation(fields: [teamId], references: [id])
+
+  @@index([createdById])
+  @@index([assignedToId])
+  @@index([teamId])
+  @@index([status])
+  @@index([category])
+}
+
+model ApiToken {
+  id         Int       @id @default(autoincrement())
+  token      String    @unique
+  userId     Int
+  name       String?
+  expiresAt  DateTime?
+  revoked    Boolean   @default(false)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+}
