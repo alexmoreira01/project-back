@@ -1,98 +1,275 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Control Tasks - Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Projeto Backend desenvolvido com NestJS, TypeScript, Prisma ORM e MySQL
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+## Tecnologias Utilizadas
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### Backend
+- [NestJS](https://nestjs.com/) - Framework Node.js
+- [TypeScript](https://www.typescriptlang.org/) 
+- [Prisma ORM](https://www.prisma.io/) - ORM para banco de dados
+- [MySQL](https://www.mysql.com/) - Banco de dados relacional
+- [JWT](https://jwt.io/) - Autenticação baseada em tokens
+- [Bcrypt](https://www.npmjs.com/package/bcrypt) - Hash de senhas
 
-## Project setup
+## Arquitetura do Backend
 
+O backend segue uma **arquitetura em camadas** baseada em **Clean Architecture** e **Domain-Driven Design (DDD)**:
+
+## Funcionalidades do Backend
+
+### Sistema de Autenticação
+- **JWT Token** - Autenticação baseada em tokens
+- **Hash de senhas** - Bcrypt para segurança
+- **Guards** - Proteção de rotas com decorators
+- **Validação de usuário** - Middleware de autenticação
+
+### Gerenciamento de Usuários
+- **CRUD completo** - Create, Read, Update
+- **Validação de dados** - Email único, validações de entrada
+- **Tipos de usuário** - USER e ADMIN
+- **Permissões** - Usuário só edita próprio perfil, Admin edita todos
+
+### Gerenciamento de Notas/Tarefas
+- **CRUD completo** - Create, Read, Update, Delete
+- **Sistema de status** - 6 status diferentes (PENDING, TODO, IN_PROGRESS, REVIEW, COMPLETED, CANCELLED)
+- **Prioridades** - 4 níveis (LOW, MEDIUM, HIGH, URGENT)
+- **Categorias** - Notas e Tarefas
+- **Atribuição** - Notas podem ser atribuídas a usuários
+- **Filtros avançados** - Por título, status, prioridade, categoria, datas, usuário, equipe
+
+### Sistema de Estatísticas
+- **Contadores por status** - Quantas notas em cada status
+- **Estatísticas por usuário** - Dashboard personalizado
+- **Notas em atraso** - Lista de tarefas vencidas
+
+## Pré-requisitos
+
+- [Node.js](https://nodejs.org/) (versão 22 ou superior)
+- [MySQL](https://www.mysql.com/) (versão 8.0 ou superior)
+- npm ou yarn
+- Git
+
+## Configuração e Instalação
+
+### 1. Instale as dependências
 ```bash
-$ npm install
+npm install
+# ou
+yarn install
 ```
 
-## Compile and run the project
+### 2. Configure as variáveis de ambiente
+Crie um arquivo .env na raiz da pasta `project-back`:
 
-```bash
-# development
-$ npm run start
+```env
+# Database
+DATABASE_URL="mysql://usuario:senha@localhost:3306/task_manager"
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+# API
+PORT=3000
 ```
 
-## Run tests
+### 3. Configure o banco de dados
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+#### Crie o banco de dados MySQL
+```sql
+CREATE DATABASE notes;
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+#### Execute as migrações do Prisma
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Gera o cliente Prisma
+npx prisma generate
+
+# Executa as migrações (cria as tabelas)
+npx prisma migrate dev
+
+# Opcional: Visualizar o banco com Prisma Studio
+npx prisma studio
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 4. Execute a aplicação
 
-## Resources
+#### Modo de desenvolvimento
+```bash
+npm run start:dev
+# ou
+yarn start:dev
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+#### Modo de produção
+```bash
+# Build da aplicação
+npm run build
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Executa a versão de produção
+npm run start:prod
+```
 
-## Support
+A API estará disponível em `http://localhost:3000`
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Scripts Disponíveis
 
-## Stay in touch
+```bash
+# Desenvolvimento
+npm run start:dev        # Inicia em modo desenvolvimento (watch mode)
+npm run start            # Inicia aplicação
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# Banco de Dados
+npx prisma generate      # Gera cliente Prisma
+npx prisma migrate dev   # Executa migrações
+npx prisma studio        # Interface visual do banco
+npx prisma migrate reset # Reset completo do banco (CUIDADO!)
+```
 
-## License
+## Estrutura do Banco de Dados
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+## API Endpoints
+
+### Autenticação
+```http
+POST /users/authenticate    # Login do usuário
+POST /users                 # Registro de usuário
+```
+
+### Usuários
+```http
+GET    /users/:id          # Buscar usuário por ID
+PUT    /users/:id          # Atualizar dados do usuário
+```
+
+### Notas/Tarefas
+```http
+GET    /notes                    # Listar todas as notas (com filtros)
+GET    /notes/my-notes/:userId   # Notas do usuário específico
+GET    /notes/team/:teamId       # Notas da equipe
+GET    /notes/overdue/list       # Notas em atraso
+GET    /notes/stats/:userId      # Estatísticas do usuário
+GET    /notes/:id                # Buscar nota específica
+POST   /notes                    # Criar nova nota
+PUT    /notes/:id                # Atualizar nota
+DELETE /notes/:id                # Deletar nota
+PUT    /notes/:id/assign         # Atribuir nota a usuário
+PUT    /notes/:id/unassign       # Desatribuir nota
+```
+
+### Filtros Disponíveis (Query Parameters)
+```typescript
+{
+  title?: string;          // Busca por título
+  status?: string;         // PENDING|TODO|IN_PROGRESS|REVIEW|COMPLETED|CANCELLED
+  priority?: string;       // LOW|MEDIUM|HIGH|URGENT
+  category?: string;       // note|task
+  startDate?: string;      // Data início (ISO)
+  endDate?: string;        // Data fim (ISO)
+  assignedToId?: string;   // ID do responsável
+  teamId?: string;         // ID da equipe
+  createdById?: string;    // ID do criador
+}
+```
+
+## Padrões Arquiteturais Utilizados
+
+### Clean Architecture
+- **Separação de responsabilidades** em camadas distintas
+- **Inversão de dependência** - Use cases não dependem de infraestrutura
+- **Testabilidade** - Lógica de negócio isolada
+
+### Repository Pattern
+- **Abstração do banco** - Use cases não conhecem Prisma diretamente
+- **Facilita testes** - Mock dos repositórios
+- **Flexibilidade** - Troca de ORM sem impacto
+
+### Use Case Pattern
+- **Lógica de negócio** centralizada em casos de uso
+- **Single Responsibility** - Cada use case tem uma responsabilidade
+- **Reutilização** - Use cases podem ser chamados de diferentes controllers
+
+### Guard Pattern
+- **Autenticação** - Proteção automática de rotas
+- **Autorização** - Verificação de permissões
+- **Decorators** - Aplicação simples com `@UseGuards()`
+
+## Segurança Implementada
+
+### Autenticação JWT
+- **Token seguro** com secret forte
+- **Expiração configurável** (365 dias)
+- **Verificação automática** em rotas protegidas
+
+### Hash de Senhas
+- **Bcrypt** com salt rounds = 10
+- **Senhas nunca expostas** em logs ou responses
+- **Validação segura** no login
+
+### Validações
+- **DTOs tipados** com class-validator
+- **Sanitização** de dados de entrada
+- **Verificação de permissões** por usuário
+
+## Tratamento de Erros
+
+### 📋 Respostas Padronizadas
+```typescript
+// Sucesso
+{
+  "success": true,
+  "message": "Operation successful",
+  "data": { ... }
+}
+
+// Erro
+{
+  "success": false,
+  "message": "Error description",
+  "statusCode": 400
+}
+```
+
+### 🔍 HTTP Status Codes
+- **200** - Success
+- **400** - Bad Request / Validation Error
+- **401** - Unauthorized
+- **403** - Forbidden
+- **404** - Not Found
+- **500** - Internal Server Error
+
+## Monitoramento e Logs
+
+### 📊 Logs de Desenvolvimento
+- **Request/Response** logging em desenvolvimento
+- **Error tracking** com stack traces
+- **Database queries** visíveis em modo debug
+
+### 🔧 Debug do Prisma
+```bash
+# Habilitar logs do Prisma
+DEBUG=prisma:query npm run start:dev
+```
+
+## Ambiente de Produção
+
+### Configurações Recomendadas
+```env
+NODE_ENV=production
+DATABASE_URL="mysql://user:pass@host:port/database"
+JWT_SECRET="your-super-secret-key-here"
+PORT=3000
+```
+
+### 📦 Deploy
+```bash
+# Build da aplicação
+npm run build
+
+# Executar migrações em produção
+npx prisma migrate deploy
+
+# Iniciar aplicação
+npm run start:prod
+```
+
+---
