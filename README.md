@@ -94,8 +94,8 @@ Crie um arquivo `.env` na raiz do projeto:
 
 ```env
 # Database
-DATABASE_URL="mysql://user:password@localhost:3306/control_tasks"
-SHADOW_DATABASE_URL="mysql://user:password@localhost:3306/control_tasks_shadow"
+DATABASE_URL="mysql://user:password@localhost:3306/notes"
+SHADOW_DATABASE_URL="mysql://user:password@localhost:3306/notes_shadow"
 
 # Server
 PORT=3000
@@ -424,11 +424,8 @@ interface ApiResponse<T> {
 ### Variáveis de Ambiente (Produção)
 
 ```env
-NODE_ENV=production
 DATABASE_URL="mysql://user:password@host:port/database"
 PORT=3000
-JWT_SECRET="your-secure-secret"
-JWT_EXPIRES_IN="30d"
 ```
 
 ### Build & Start
